@@ -16,8 +16,8 @@ The script will automatically fetch the latest Plasticity release from GitHub so
 
 #### Tested on
 
-- [ ] Debian 12 (Bookworm)
-- [ ] Debian 13 (Trixie)
+- [x] Debian 12 (Bookworm)
+- [x] Debian 13 (Trixie)
 - [x] Debian forky/sid (unstable)
 
 
