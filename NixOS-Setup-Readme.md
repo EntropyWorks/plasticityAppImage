@@ -2,7 +2,7 @@
 
 Since Plasticity only ships a `.deb`, this repo also provides a Nix flake so you can install it properly on NixOS without any manual AppImage wrangling.
 
-The package uses `appimageTools.wrapType2` which unpacks the AppImage and wraps it into a proper Nix derivation — no binfmt or FUSE tricks needed just to run Plasticity.
+The package uses `appimageTools.wrapType2` which unpacks the AppImage and wraps it into a proper Nix derivation. If you also want your system to run arbitrary `.AppImage` files from other sources, there is an optional binfmt + FUSE setup at the bottom of this page.
 
 ---
 
