@@ -61,10 +61,39 @@ jobs:
     permissions:
       contents: write
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          # Use token so git push is authenticated
+          token: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Download AppImage artifact
         uses: actions/download-artifact@v4
         with:
           name: appimage
+
+      - name: Update nix/plasticity.nix with new version and hash
+        env:
+          VERSION: ${{ needs.check.outputs.version }}
+        run: |
+          HASH=$(sha256sum "Plasticity-${VERSION}-x86_64.AppImage" \
+            | awk '{print $1}' | xxd -r -p | base64 -w 0)
+          sed -i "s|version = \"[^\"]*\";|version = \"${VERSION}\";|" nix/plasticity.nix
+          sed -i "s|hash = \"sha256-[^\"]*\";|hash = \"sha256-${HASH}\";|" nix/plasticity.nix
+          echo "Updated nix/plasticity.nix to v${VERSION} (sha256-${HASH})"
+
+      - name: Commit, tag and push
+        env:
+          VERSION: ${{ needs.check.outputs.version }}
+          BRANCH: ${{ github.ref_name }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add nix/plasticity.nix
+          git commit -m "chore: update plasticity to v${VERSION} [skip ci]"
+          git tag "v${VERSION}"
+          git push origin "HEAD:${BRANCH}"
+          git push origin "v${VERSION}"
 
       - name: Create GitHub Release
         env:
@@ -73,7 +102,7 @@ jobs:
           VERSION: ${{ needs.check.outputs.version }}
         run: |
           gh release create "v${VERSION}" \
-            Plasticity-${VERSION}-x86_64.AppImage \
+            "Plasticity-${VERSION}-x86_64.AppImage" \
             --title "Plasticity ${VERSION}" \
             --repo "${REPO}" \
             --notes "Automated AppImage build for [Plasticity v${VERSION}](https://github.com/nkallen/plasticity/releases/tag/v${VERSION})."
