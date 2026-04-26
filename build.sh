@@ -11,21 +11,25 @@
 
 ##### EDIT #####
 
-TARGET_DEB_URL=https://github.com/nkallen/plasticity/releases/download/v24.1.5/plasticity_24.1.5_amd64.deb
-APPIMAGE_TOOL_URL=https://github.com/AppImage/appimagetool/releases/download/continuous/appimagetool-x86_64.AppImage
-TEMP_DIR=/tmp/$( date +%s )
+#TARGET_DEB_URL=https://github.com/nkallen/plasticity/releases/download/v24.1.5/plasticity_24.1.5_amd64.deb
+TARGET_DEB_URL=https://github.com/nkallen/plasticity/releases/download/v26.1.3/plasticity_26.1.3_amd64.deb
+APPIMAGE_RUNTIME_URL=https://github.com/AppImage/AppImageKit/releases/download/continuous/runtime-x86_64
+TEMP_DIR=/tmp/build-plasticity
 
 ###############
 
 set -e
 # set -x # for debug
 
-mkdir "${TEMP_DIR}"
+if [[ ! -d "${TEMP_DIR}" ]] ; then
+  mkdir "${TEMP_DIR}"
+fi
 
 sudo apt -y install\
     desktop-file-utils\
     fuse\
-    file
+    file\
+    squashfs-tools
 
 # get plasticity deb
 wget "${TARGET_DEB_URL}" -O "${TEMP_DIR}/plasticity.deb"
@@ -34,9 +38,8 @@ sudo apt install "${TEMP_DIR}/plasticity.deb"
 # extract deb files
 dpkg -x "${TEMP_DIR}/plasticity.deb" "${TEMP_DIR}/DebFiles"
 
-# get appimagetool
-wget "${APPIMAGE_TOOL_URL}" -O "${TEMP_DIR}/appimagetool.AppImage"
-chmod +x "${TEMP_DIR}/appimagetool.AppImage"
+# get AppImage runtime (plain ELF, not an AppImage itself)
+wget "${APPIMAGE_RUNTIME_URL}" -O "${TEMP_DIR}/runtime-x86_64"
 
 # create the App directory
 mkdir -p "${TEMP_DIR}/AppDir"
@@ -71,9 +74,15 @@ chmod +x "${TEMP_DIR}/AppDir/plasticity.desktop"
 
 #copy the icon
 cp icon.png "${TEMP_DIR}/AppDir/"
+cp icon.png "${TEMP_DIR}/AppDir/.DirIcon"
 
-#run appimagetool
-${TEMP_DIR}/appimagetool.AppImage -n "${TEMP_DIR}/AppDir"
+# build AppImage manually (avoids appimagetool, which is itself an AppImage and
+# fails in containers where binfmt_misc routes AppImages through a missing handler)
+mksquashfs "${TEMP_DIR}/AppDir" "${TEMP_DIR}/plasticity.squashfs" -root-owned -noappend -comp gzip
+
+cat "${TEMP_DIR}/runtime-x86_64" "${TEMP_DIR}/plasticity.squashfs" > Plasticity-x86_64.AppImage
+chmod +x Plasticity-x86_64.AppImage
+echo "AppImage built: $(pwd)/Plasticity-x86_64.AppImage"
 
 #ask about files
 while true; do
