@@ -1,5 +1,7 @@
 ## Plasticity AppImage
 
+[![Build and Release AppImage](https://github.com/EntropyWorks/plasticityAppImage/actions/workflows/build-release.yml/badge.svg)](https://github.com/EntropyWorks/plasticityAppImage/actions/workflows/build-release.yml)
+
 This is a simple script to build an AppImage pacakge for Plasticity ( https://www.plasticity.xyz/ ).  
 Unfortunately Plasticity only releases deb packages for debian-like distributions and I am a nixOS user.  
 I made this simple script so I could run plasticity in my machine and creating this repo in case anyone else can benefit.   
