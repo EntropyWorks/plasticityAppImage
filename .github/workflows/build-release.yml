@@ -6,7 +6,7 @@ on:
   workflow_dispatch:       # Allow manual trigger from the Actions tab
   push:
     branches:
-      - 26.1.3_amd64      # temporary — remove after merging to main
+      - testing-workflow  # temporary — remove after merging to main
 
 jobs:
 

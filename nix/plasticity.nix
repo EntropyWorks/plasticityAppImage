@@ -31,7 +31,13 @@ appimageTools.wrapType2 {
   inherit pname version src;
 
   extraInstallCommands = ''
+    # Remove any version-tagged desktop files extracted from the AppImage
+    find $out/share/plasticity -name "*.desktop" -delete 2>/dev/null || true
+    # Install our clean, version-free desktop entry
     install -Dm444 -t $out/share/applications ${desktopItem}/share/applications/*
+    # Install icon if present in the AppImage squashfs
+    find $out/share/plasticity -name "plasticity.png" | head -1 | \
+      xargs -I{} install -Dm444 {} $out/share/icons/hicolor/256x256/apps/plasticity.png 2>/dev/null || true
   '';
 
   meta = {
