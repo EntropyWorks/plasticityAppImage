@@ -10,7 +10,7 @@ let
 
   src = fetchurl {
     url = "https://github.com/EntropyWorks/plasticityAppImage/releases/download/v${version}/Plasticity-${version}-x86_64.AppImage";
-    hash = "sha256-rWZMlWw4Vga2C0YeFuMp6C+UP7qft/cXB/pBDCNFvSM=";
+    hash = "sha256-88Jt/agbPWWJrZ9s/OAnIIs2KNEw1ujqLwgUmau8MtA=";
   };
 
   desktopItem = makeDesktopItem {
