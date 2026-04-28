@@ -132,7 +132,7 @@ download_if_needed() {
 }
 
 # pre-flight: icon must exist before we start downloading anything
-[[ -f "icon.png" ]] || { echo -e "${RED}icon.png not found in $(pwd). Run from the repo root.${NC}" >&2; exit 1; }
+[[ -f "plasticity.png" ]] || { echo -e "${RED}plasticity.png not found in $(pwd). Run from the repo root.${NC}" >&2; exit 1; }
 
 if [[ ! -d "${TEMP_DIR}" ]] ; then
   mkdir "${TEMP_DIR}"
@@ -206,14 +206,14 @@ cat << 'EOF' > "${TEMP_DIR}/AppDir/plasticity.desktop"
 Name=Plasticity
 Exec=plasticity
 Type=Application
-Icon=icon
+Icon=plasticity
 Categories=Utility
 EOF
 chmod +x "${TEMP_DIR}/AppDir/plasticity.desktop"
 
 #copy the icon
-cp icon.png "${TEMP_DIR}/AppDir/"
-cp icon.png "${TEMP_DIR}/AppDir/.DirIcon"
+cp plasticity.png "${TEMP_DIR}/AppDir/"
+cp plasticity.png "${TEMP_DIR}/AppDir/.DirIcon"
 
 # build AppImage manually (avoids appimagetool, which is itself an AppImage and
 # fails in containers where binfmt_misc routes AppImages through a missing handler)
