@@ -4,9 +4,6 @@ on:
   schedule:
     - cron: '0 0 * * 1'  # Every Monday at midnight UTC
   workflow_dispatch:       # Allow manual trigger from the Actions tab
-  push:
-    branches:
-      - testing-workflow  # temporary — remove after merging to main
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
@@ -88,14 +85,13 @@ jobs:
       - name: Commit, tag and push
         env:
           VERSION: ${{ needs.check.outputs.version }}
-          BRANCH: ${{ github.ref_name }}
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add nix/plasticity.nix
           git commit -m "chore: update plasticity to v${VERSION} [skip ci]"
           git tag "v${VERSION}"
-          git push origin "HEAD:${BRANCH}"
+          git push origin "HEAD:main"
           git push origin "v${VERSION}"
 
       - name: Create GitHub Release
